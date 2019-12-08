@@ -10,7 +10,7 @@ namespace ReceiveFiles
     public class FileChunk
     {
         public string FileName { get; set; }
-        public Guid FileGuid { get; set; }
+        public Guid FileGuid { get; set; }        
         public byte[] Content { get; set; }
         public int ChunkN { get; set; }
         public int StartPosition { get; set; }
