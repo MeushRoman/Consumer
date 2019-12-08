@@ -24,54 +24,44 @@ namespace ReceiveFiles
         {
             var factory = new ConnectionFactory() { HostName = "localhost" };
 
-            //ThreadPool.QueueUserWorkItem(worker =>
-            //{
-                //while (true)
-                //{
-                    using (var connection = factory.CreateConnection())
-                    using (var channel = connection.CreateModel())
-                    {
-                        channel.QueueDeclare(queue: "files_test",
-                                             durable: false,
-                                             exclusive: false,
-                                             autoDelete: false,
-                                             arguments: null);
+            using (var connection = factory.CreateConnection())
+            using (var channel = connection.CreateModel())
+            {
+                channel.QueueDeclare(queue: "files_test",
+                                     durable: false,
+                                     exclusive: false,
+                                     autoDelete: false,
+                                     arguments: null);
 
-                        var consumer = new EventingBasicConsumer(channel);
+                var consumer = new EventingBasicConsumer(channel);
 
-                        consumer.Received += (model, ea) =>
-                        {
-                            var body = ea.Body;
-                            var message = Encoding.UTF8.GetString(body);
+                consumer.Received += (model, ea) =>
+                {
+                    var body = ea.Body;
+                    var message = Encoding.UTF8.GetString(body);
 
-                            var fileChunk = JsonConvert.DeserializeObject<FileChunk>(message);
-                            WriteToFile(fileChunk);
-                        };
+                    var fileChunk = JsonConvert.DeserializeObject<FileChunk>(message);
+                    WriteToFile(fileChunk);
+                };
 
 
-                        channel.BasicConsume(queue: "files_test",
-                                             autoAck: true,
-                                             consumer: consumer);
+                channel.BasicConsume(queue: "files_test",
+                                     autoAck: true,
+                                     consumer: consumer);
 
-                        Console.WriteLine(" Press [enter] to exit.");
-                    Console.ReadLine();
-                  //  Thread.Sleep(100000);
-                }
-               // }
-           // });
+                Console.WriteLine(" Press [enter] to exit.");
+                Console.ReadLine();
+            }
         }
 
-        
+
         public void WriteToFile(FileChunk fileChunk)
         {
-
             using (FileStream fs = new FileStream(Path + fileChunk.FileName, FileMode.Open))
             {
                 fs.Position = fileChunk.StartPosition;
                 fs.Write(fileChunk.Content, 0, fileChunk.Content.Length);
             }
-
-
         }
     }
 }

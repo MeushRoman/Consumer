@@ -17,50 +17,42 @@ namespace ReceiveFiles
 
         public FileInformationRecipient(string path)
         {
-            Path = path;            
+            Path = path;
         }
 
         public void ReceiivingData()
         {
             var factory = new ConnectionFactory() { HostName = "localhost" };
+            using (var connection = factory.CreateConnection())
+            using (var channel = connection.CreateModel())
+            {
+                channel.QueueDeclare(queue: "files_info_test",
+                                     durable: false,
+                                     exclusive: false,
+                                     autoDelete: false,
+                                     arguments: null);
 
-            //ThreadPool.QueueUserWorkItem(worker =>
-            //{
-               //while (true)
-               // {
-                    using (var connection = factory.CreateConnection())
-                    using (var channel = connection.CreateModel())
-                    {
-                        channel.QueueDeclare(queue: "files_info_test",
-                                             durable: false,
-                                             exclusive: false,
-                                             autoDelete: false,
-                                             arguments: null);
+                var consumer = new EventingBasicConsumer(channel);
 
-                        var consumer = new EventingBasicConsumer(channel);
+                consumer.Received += (model, ea) =>
+                {
+                    var body = ea.Body;
+                    var message = Encoding.UTF8.GetString(body);
 
-                        consumer.Received += (model, ea) =>
-                        {
-                            var body = ea.Body;
-                            var message = Encoding.UTF8.GetString(body);
+                    var file = JsonConvert.DeserializeObject<FileInfo>(message);
+                    FileCreation(file);
+                };
 
-                            var file = JsonConvert.DeserializeObject<FileInfo>(message);
-                            FileCreation(file);
-                        };                        
+                channel.BasicConsume(queue: "files_info_test",
+                                     autoAck: true,
+                                     consumer: consumer);
 
-                        channel.BasicConsume(queue: "files_info_test",
-                                             autoAck: true,
-                                             consumer: consumer);
+                Console.WriteLine(" Press [enter] to exit.");
 
-                        Console.WriteLine(" Press [enter] to exit.");
-                        //
-                        Console.ReadLine();
-                       // Thread.Sleep(100000);
-                }
-               // }
-          //  });
+                Console.ReadLine();
+            }
         }
-      
+
 
         public void FileCreation(FileInfo file)
         {
