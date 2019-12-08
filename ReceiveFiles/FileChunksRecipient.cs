@@ -17,7 +17,6 @@ namespace ReceiveFiles
         public FileChunksRecipient(string path)
         {
             Path = path;
-
         }
 
         public void ReceiivingData()
@@ -44,7 +43,6 @@ namespace ReceiveFiles
                     WriteToFile(fileChunk);
                 };
 
-
                 channel.BasicConsume(queue: "files_test",
                                      autoAck: true,
                                      consumer: consumer);
@@ -57,11 +55,20 @@ namespace ReceiveFiles
 
         public void WriteToFile(FileChunk fileChunk)
         {
-            using (FileStream fs = new FileStream(Path + fileChunk.FileName, FileMode.Open))
+            try
             {
-                fs.Position = fileChunk.StartPosition;
-                fs.Write(fileChunk.Content, 0, fileChunk.Content.Length);
+                using (FileStream fs = new FileStream(Path + fileChunk.FileName, FileMode.Open))
+                {
+                    fs.Position = fileChunk.StartPosition;
+                    fs.Write(fileChunk.Content, 0, fileChunk.Content.Length);
+                }
             }
+            catch (Exception)
+            {
+
+                
+            }
+            
         }
     }
 }

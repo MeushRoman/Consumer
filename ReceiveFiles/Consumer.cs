@@ -12,7 +12,7 @@ namespace ReceiveFiles
         public string HostName;
         public string UerName;
         public string Password;
-        public static string Path { get; set; } = @"C:\test2\";
+        public string Path { get; set; } = @"C:\test2\";
 
         public FileChunksRecipient fileChunks { get; set; } 
         public FileInformationRecipient fileInformation { get; set; }

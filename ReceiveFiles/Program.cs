@@ -17,8 +17,7 @@ namespace ReceiveFiles
         {
             Consumer consumer = new Consumer();
 
-            Console.ReadLine();
-            
+            Console.ReadLine();            
         }
     }
 }
