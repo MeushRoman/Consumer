@@ -52,6 +52,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Consumer.cs" />
+    <Compile Include="FileChunk.cs" />
+    <Compile Include="FileChunksRecipient.cs" />
+    <Compile Include="FileInfo.cs" />
+    <Compile Include="FileInformationRecipient.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
