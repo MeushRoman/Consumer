@@ -22,8 +22,8 @@ namespace ReceiveFiles
             fileInformation = new FileInformationRecipient(Path);
             fileChunks = new FileChunksRecipient(Path);
 
-            fileInformation.ReceiivingData();
-            fileChunks.ReceiivingData();
+            ThreadPool.QueueUserWorkItem(worker => fileInformation.ReceiivingData());           
+            ThreadPool.QueueUserWorkItem(worker => fileChunks.ReceiivingData());
         }
     }
 }

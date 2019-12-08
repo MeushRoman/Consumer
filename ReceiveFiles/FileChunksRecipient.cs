@@ -40,6 +40,10 @@ namespace ReceiveFiles
                     var message = Encoding.UTF8.GetString(body);
 
                     var fileChunk = JsonConvert.DeserializeObject<FileChunk>(message);
+                    while (!File.Exists(Path + fileChunk.FileName))
+                    {
+                        Thread.Sleep(1000);
+                    }
                     WriteToFile(fileChunk);
                 };
 
@@ -50,6 +54,7 @@ namespace ReceiveFiles
                 Console.WriteLine(" Press [enter] to exit.");
                 Console.ReadLine();
             }
+
         }
 
 
@@ -65,10 +70,8 @@ namespace ReceiveFiles
             }
             catch (Exception)
             {
-
-                
+                WriteToFile(fileChunk);
             }
-            
         }
     }
 }
